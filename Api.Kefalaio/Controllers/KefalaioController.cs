@@ -12,7 +12,7 @@ namespace Api.Kefalaio.Controllers
     [Route("[controller]")]
     public class KefalaioController : ControllerBase
     {
-       
+
         private readonly ILogger<KefalaioController> _logger;
 
         public KefalaioController(ILogger<KefalaioController> logger)
@@ -26,7 +26,7 @@ namespace Api.Kefalaio.Controllers
         {
             var context = new KefalaioContext(); //TODO: interface ?
             var products = context.Smasts
-                        .Where(x=> val.SCodes.Contains(x.SCode)).ToList();
+                        .Where(x => val.SCodes.Contains(x.SCode)).ToList();
             return products;
         }
 
@@ -35,7 +35,7 @@ namespace Api.Kefalaio.Controllers
         public void UpdatePrices(Smast[] products)
         {
             var context = new KefalaioContext();
-            foreach(var item in products)
+            foreach (var item in products)
             {
                 var product = context.Smasts.FirstOrDefault(x => item.SCode == x.SCode);
                 if (product != null)
@@ -43,8 +43,9 @@ namespace Api.Kefalaio.Controllers
                     product.SRetailPr = item.SRetailPr;
                 }
             }
-            
+
             context.SaveChanges();
         }
     }
+
 }
