@@ -22,11 +22,11 @@ namespace Api.Kefalaio.Controllers
 
         [HttpGet]
         [Route("GetProducts")]
-        public IEnumerable<Smast> GetProducts(GetProductsDTO val)
+        public IEnumerable<Smast> GetProducts([FromQuery(Name = "sCodes")] string[] sCodes)
         {
             var context = new KefalaioContext(); //TODO: interface ?
             var products = context.Smasts
-                        .Where(x => val.SCodes.Contains(x.SCode)).ToList();
+                        .Where(x => sCodes.Contains(x.SCode)).ToList();
             return products;
         }
 
