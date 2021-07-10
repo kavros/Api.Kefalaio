@@ -1,6 +1,4 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
+﻿using Microsoft.EntityFrameworkCore;
 
 #nullable disable
 
@@ -11,12 +9,12 @@ namespace Api.Kefalaio.Model
         public KefalaioContext()
         {
         }
-
+        
         public KefalaioContext(DbContextOptions<KefalaioContext> options)
             : base(options)
         {
         }
-
+        
         public virtual DbSet<ATestParastatika> ATestParastatikas { get; set; }
         public virtual DbSet<Abcanalysiscust> Abcanalysiscusts { get; set; }
         public virtual DbSet<Abcanalysisstock> Abcanalysisstocks { get; set; }
@@ -296,8 +294,12 @@ namespace Api.Kefalaio.Model
         {
             if (!optionsBuilder.IsConfigured)
             {
+
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-                optionsBuilder.UseSqlServer("Server=.\\;Database=Cmp007;Trusted_Connection=True;");
+                optionsBuilder.UseSqlServer(
+                     "Server=.\\;Database=Cmp007;Trusted_Connection=True;"
+                    );
+
             }
         }
 

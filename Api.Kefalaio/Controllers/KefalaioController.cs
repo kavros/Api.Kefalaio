@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Api.Kefalaio.Controllers.DTOs;
 using Api.Kefalaio.Model;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -30,8 +29,8 @@ namespace Api.Kefalaio.Controllers
             return products;
         }
 
-        [HttpPost]
-        [Route("UpdateProducts")]
+        [HttpPatch]
+        [Route("UpdateRetailPrice")]
         public void UpdatePrices(Smast[] products)
         {
             var context = new KefalaioContext();
