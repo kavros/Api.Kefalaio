@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Api.Kefalaio.Services;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 #nullable disable
 
@@ -6,15 +8,8 @@ namespace Api.Kefalaio.Model
 {
     public partial class KefalaioContext : DbContext
     {
-        public KefalaioContext()
-        {
-        }
-        
-        public KefalaioContext(DbContextOptions<KefalaioContext> options)
-            : base(options)
-        {
-        }
-        
+
+        private readonly string _connectionString;
         public virtual DbSet<ATestParastatika> ATestParastatikas { get; set; }
         public virtual DbSet<Abcanalysiscust> Abcanalysiscusts { get; set; }
         public virtual DbSet<Abcanalysisstock> Abcanalysisstocks { get; set; }
@@ -290,15 +285,20 @@ namespace Api.Kefalaio.Model
         public virtual DbSet<Webmanufacturer> Webmanufacturers { get; set; }
         public virtual DbSet<Xncurr> Xncurrs { get; set; }
 
+        public KefalaioContext(DbContextOptions<KefalaioContext> options, IOptions<Configuration> configuration)
+            : base(options)
+        {
+            _connectionString = configuration.Value.ConnectionString;
+        }
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
             {
 
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-                optionsBuilder.UseSqlServer(
-                     "Server=.\\;Database=Cmp007;Trusted_Connection=True;"
-                    );
+                optionsBuilder.UseSqlServer(_connectionString);
+                //optionsBuilder.UseSqlServer("Server=.\\;Database=Cmp008;Trusted_Connection=True;");
 
             }
         }

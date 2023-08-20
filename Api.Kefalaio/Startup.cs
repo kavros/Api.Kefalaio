@@ -1,7 +1,10 @@
+using Api.Kefalaio.Model;
+using Api.Kefalaio.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -26,12 +29,14 @@ namespace Api.Kefalaio
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-
+            services.Configure<Configuration>(Configuration.GetSection("Configuration"));
             services.AddControllers();
+            services.AddOptions(); 
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "WebApplicationTest", Version = "v1" });
             });
+            services.AddDbContext<KefalaioContext>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
