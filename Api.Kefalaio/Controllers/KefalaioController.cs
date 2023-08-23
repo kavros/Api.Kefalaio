@@ -57,6 +57,16 @@ namespace Api.Kefalaio.Controllers
             return Ok(data);
         }
 
+        [HttpGet]
+        [Route("GetSuppliers")]
+        public IActionResult GetSuppliers()
+        {
+            var suppliers = _dbContext.Pmasts
+                .OrderBy(x=>x.PName)
+                .Select(x => new { x.PName, x.PCode });
+            return Ok(suppliers);
+        }
+
         private IList<OrderResponse> GetData(OrderParams orderParams)
         {
             int nextOrderAfter = orderParams.NextOrderAfter;
@@ -119,6 +129,9 @@ namespace Api.Kefalaio.Controllers
 /**
  * TODO
  * use async
+ * rename kefalaio controller to OrdersController
  * create service
+ * should I close EF context? 
+ * rename controller
  * strnDateWindow code is commented (need to restore using latest db data)
  */
