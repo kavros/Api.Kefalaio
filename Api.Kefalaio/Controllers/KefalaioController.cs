@@ -63,11 +63,11 @@ namespace Api.Kefalaio.Controllers
         {
             var suppliers = _dbContext.Pmasts
                 .OrderBy(x=>x.PName)
-                .Select(x => new { x.PName, x.PCode });
+                .Select(x => new Supplier{ Name = x.PName, Code = x.PCode });
             return Ok(suppliers);
         }
 
-        private IList<OrderResponse> GetData(OrderParams orderParams)
+        private IList<Item> GetData(OrderParams orderParams)
         {
             int nextOrderAfter = orderParams.NextOrderAfter;
             string suplierCode = orderParams.SupplierCode;
@@ -88,7 +88,7 @@ namespace Api.Kefalaio.Controllers
             //Console.WriteLine(allProducts.Count());
             var salesTrns = from s in _dbContext.Strns
                               join sm in _dbContext.Smasts on s.SFileId equals sm.SFileId
-                              where s.StTransKind == 37 /*&& s.StDate >= DateTime.Now.AddDays(-strnDateWindow)*/
+                              where s.StTransKind == 37 && s.StDate >= DateTime.Now.AddDays(-strnDateWindow)
                               group new { s, sm } by sm.SName into g
                               select new
                               {
@@ -112,12 +112,12 @@ namespace Api.Kefalaio.Controllers
                             SuggestedQuantity = sales.protinomeni_posotita
                         };
 
-            var results = query.Select(x => new OrderResponse()
+            var results = query.Select(x => new Item()
             {
-                AvgSalesPerDay = x.AvgSalesPerDay,
-                Quantity = x.Quantity,
+                AvgSalesPerDay = (int) x.AvgSalesPerDay,
+                Quantity = (int) x.Quantity,
                 Product = x.Product,
-                SuggestedQuantity = x.SuggestedQuantity
+                SuggestedQuantity = (int) x.SuggestedQuantity
 
             }).ToList();
             return results;
@@ -128,6 +128,7 @@ namespace Api.Kefalaio.Controllers
 
 /**
  * TODO
+ * hide perivalontiko telos
  * use async
  * rename kefalaio controller to OrdersController
  * create service
