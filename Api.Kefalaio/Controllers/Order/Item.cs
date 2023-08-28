@@ -4,7 +4,7 @@
     {
         public string Product { get; set; }
         public int Quantity { get; set; }
-        public int AvgSalesPerDay { get; set; }
+        public double AvgSalesPerDay { get; set; }
         public int SuggestedQuantity { get; set; }
     }
 }

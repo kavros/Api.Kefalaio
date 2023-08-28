@@ -114,7 +114,7 @@ namespace Api.Kefalaio.Controllers
 
             var results = query.Select(x => new Item()
             {
-                AvgSalesPerDay = (int) x.AvgSalesPerDay,
+                AvgSalesPerDay = (double) Math.Round((decimal)x.AvgSalesPerDay,2),
                 Quantity = (int) x.Quantity,
                 Product = x.Product,
                 SuggestedQuantity = (int) x.SuggestedQuantity
@@ -128,11 +128,11 @@ namespace Api.Kefalaio.Controllers
 
 /**
  * TODO
+ * ! manage fixed capacity
  * hide perivalontiko telos
  * use async
  * rename kefalaio controller to OrdersController
  * create service
  * should I close EF context? 
  * rename controller
- * strnDateWindow code is commented (need to restore using latest db data)
  */
