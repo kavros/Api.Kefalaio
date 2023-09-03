@@ -4,49 +4,20 @@ using System.Linq;
 using Api.Kefalaio.Controllers.Order;
 using Api.Kefalaio.Model;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 
 namespace Api.Kefalaio.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class KefalaioController : ControllerBase
+    public class OrdersController : ControllerBase
     {
 
-        private readonly ILogger<KefalaioController> _logger;
         private readonly KefalaioContext _dbContext;
-        public KefalaioController(ILogger<KefalaioController> logger, KefalaioContext context)
+        public OrdersController(KefalaioContext context)
         {
-            _logger = logger;
             _dbContext = context;
         }
-
-        [HttpGet]
-        [Route("GetProducts")]
-        public IEnumerable<Smast> GetProducts([FromQuery(Name = "sCodes")] string[] sCodes)
-        {
-            var products = _dbContext.Smasts
-                        .Where(x => sCodes.Contains(x.SCode)).ToList();
-            return products;
-        }
-
-        [HttpPatch]
-        [Route("UpdateRetailPrice")]
-        public void UpdatePrices(Smast[] products)
-        {
-            foreach (var item in products)
-            {
-                var product = _dbContext.Smasts.FirstOrDefault(x => item.SCode == x.SCode);
-                if (product != null)
-                {
-                    product.SRetailPr = item.SRetailPr;
-                }
-            }
-
-            _dbContext.SaveChanges();
-        }
-
+       
         [HttpPost]
         [Route("GetOrder")]
 
@@ -85,7 +56,6 @@ namespace Api.Kefalaio.Controllers
                                   g.Key.SName,
                                   g.Key.SstRemain1
                               };
-            //Console.WriteLine(allProducts.Count());
             var salesTrns = from s in _dbContext.Strns
                               join sm in _dbContext.Smasts on s.SFileId equals sm.SFileId
                               where s.StTransKind == 37 && s.StDate >= DateTime.Now.AddDays(-strnDateWindow)
@@ -94,9 +64,7 @@ namespace Api.Kefalaio.Controllers
                               {
                                 sname = g.Key,
                                 mesos_oros_ana_mera = g.Sum(x => x.s.StQuant) / strnDateWindow,
-                                protinomeni_posotita = nextOrderAfter * (g.Sum(x => x.s.StQuant) / strnDateWindow)
                               };
-            //Console.WriteLine(salesTrns.Count());
             var query = from supProd in (
                 allProducts
                         )
@@ -107,18 +75,16 @@ namespace Api.Kefalaio.Controllers
                         select new
                         {
                             Product = supProd.SName,
-                            Quantity = supProd.SstRemain1,
+                            Stock = supProd.SstRemain1,
                             AvgSalesPerDay = sales.mesos_oros_ana_mera,
-                            SuggestedQuantity = sales.protinomeni_posotita
                         };
 
-            var results = query.Select(x => new Item()
+            var results = query.ToList().Select(x => new Item()
             {
                 AvgSalesPerDay = (double) Math.Round((decimal)x.AvgSalesPerDay,2),
-                Quantity = (int) x.Quantity,
+                Stock = (int) x.Stock,
                 Product = x.Product,
-                SuggestedQuantity = (int) x.SuggestedQuantity
-
+                SuggestedQuantity = (int)Math.Round((decimal)x.AvgSalesPerDay*nextOrderAfter)
             }).ToList();
             return results;
         }
@@ -127,8 +93,8 @@ namespace Api.Kefalaio.Controllers
 }
 
 /**
- * TODO
- * ! manage fixed capacity
+ * TODO:
+ * refactor LINQ query so it extracts data from db. Apply bussiness logic like suggested quantity calculation later.
  * hide perivalontiko telos
  * use async
  * rename kefalaio controller to OrdersController
