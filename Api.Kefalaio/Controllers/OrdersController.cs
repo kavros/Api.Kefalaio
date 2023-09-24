@@ -56,7 +56,7 @@ namespace Api.Kefalaio.Controllers
                                   g.Key.SName,
                                   g.Key.SstRemain1
                               };
-            var salesTrns = from s in _dbContext.Strns
+            var salesTrans = from s in _dbContext.Strns
                               join sm in _dbContext.Smasts on s.SFileId equals sm.SFileId
                               where s.StTransKind == 37 && s.StDate >= DateTime.Now.AddDays(-strnDateWindow)
                               group new { s, sm } by sm.SName into g
@@ -65,12 +65,8 @@ namespace Api.Kefalaio.Controllers
                                 sname = g.Key,
                                 mesos_oros_ana_mera = g.Sum(x => x.s.StQuant) / strnDateWindow,
                               };
-            var query = from supProd in (
-                allProducts
-                        )
-            join sales in (
-                            salesTrns
-                        ) on supProd.SName equals sales.sname
+            var query = from supProd in allProducts.ToList()
+                        join sales in salesTrans.ToList() on supProd.SName equals sales.sname
                         orderby supProd.SName descending
                         select new
                         {
