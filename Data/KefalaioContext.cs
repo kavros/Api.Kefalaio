@@ -1,10 +1,10 @@
-﻿using Api.Kefalaio.Services;
+﻿using Api.Kefalaio.Model;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 
 #nullable disable
 
-namespace Api.Kefalaio.Model
+namespace Data
 {
     public partial class KefalaioContext : DbContext
     {

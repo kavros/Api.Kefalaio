@@ -1,4 +1,4 @@
-﻿namespace Api.Kefalaio.Controllers.Order
+﻿namespace Services
 {
     public class OrderParams
     {

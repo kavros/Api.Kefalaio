@@ -1,19 +1,12 @@
-using Api.Kefalaio.Model;
-using Api.Kefalaio.Services;
+using Data;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using Services;
+using Configuration = Data.Configuration;
 
 namespace Api.Kefalaio
 {
@@ -37,6 +30,7 @@ namespace Api.Kefalaio
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "WebApplicationTest", Version = "v1" });
             });
             services.AddDbContext<KefalaioContext>();
+            services.AddScoped<IOrdersService, OrdersService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

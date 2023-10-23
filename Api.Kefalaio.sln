@@ -1,9 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.30204.135
+# Visual Studio Version 17
+VisualStudioVersion = 17.4.33205.214
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Api.Kefalaio", "Api.Kefalaio\Api.Kefalaio.csproj", "{BBD61B2E-5868-4699-8187-A2E6CB817462}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Api.Kefalaio", "Api.Kefalaio\Api.Kefalaio.csproj", "{BBD61B2E-5868-4699-8187-A2E6CB817462}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Services", "Service\Services.csproj", "{2CAE41AD-2258-455A-9149-1BECCA5E3A33}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Data", "Data\Data.csproj", "{6DEEB224-E24B-4E9B-9017-6F2E5CE15CDD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +19,14 @@ Global
 		{BBD61B2E-5868-4699-8187-A2E6CB817462}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BBD61B2E-5868-4699-8187-A2E6CB817462}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BBD61B2E-5868-4699-8187-A2E6CB817462}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2CAE41AD-2258-455A-9149-1BECCA5E3A33}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2CAE41AD-2258-455A-9149-1BECCA5E3A33}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2CAE41AD-2258-455A-9149-1BECCA5E3A33}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2CAE41AD-2258-455A-9149-1BECCA5E3A33}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6DEEB224-E24B-4E9B-9017-6F2E5CE15CDD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6DEEB224-E24B-4E9B-9017-6F2E5CE15CDD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6DEEB224-E24B-4E9B-9017-6F2E5CE15CDD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6DEEB224-E24B-4E9B-9017-6F2E5CE15CDD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

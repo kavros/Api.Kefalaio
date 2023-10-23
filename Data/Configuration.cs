@@ -1,5 +1,5 @@
-﻿namespace Api.Kefalaio.Services
-{
+﻿namespace Data 
+{ 
     public class Configuration
     {
         public string ConnectionString { get; set; }
