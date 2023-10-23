@@ -40,6 +40,4 @@ namespace Api.Kefalaio.Controllers
 /**
  * TODO:
  * hide perivalontiko telos
- * should I close EF context? 
- * rename controller
  */
