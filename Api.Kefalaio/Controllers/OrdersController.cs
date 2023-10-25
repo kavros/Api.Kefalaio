@@ -1,5 +1,7 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Serilog;
 using Services;
 
 namespace Api.Kefalaio.Controllers
@@ -21,16 +23,32 @@ namespace Api.Kefalaio.Controllers
         public async Task<IActionResult> GetOrderAsync(OrderParams orderParams)
         {
 
-            var data = await _ordersService.GetOrder(orderParams);
-            return Ok(data);
+            try
+            {
+                var data = await _ordersService.GetOrder(orderParams);
+                return Ok(data);
+            }
+            catch (Exception ex)
+            {
+                Log.Logger.Error($"Error: GetOrder request failed. \n {ex}");
+                throw;
+            }
         }
 
         [HttpGet]
         [Route("GetSuppliers")]
         public async Task<IActionResult> GetSuppliers()
         {
-            var suppliers = await _ordersService.GetSuppliers();
-            return Ok(suppliers);
+            try
+            {
+                var suppliers = await _ordersService.GetSuppliers();
+                return Ok(suppliers);
+            }
+            catch (Exception ex)
+            {
+                Log.Logger.Error($"Error: GetSuppliers request failed. \n {ex}");
+                throw;
+            }
         }
 
     }
@@ -40,4 +58,5 @@ namespace Api.Kefalaio.Controllers
 /**
  * TODO:
  * hide perivalontiko telos
+ * remove unused nuget packages like Serilog.Sinks.RollingFile
  */
