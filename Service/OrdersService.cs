@@ -22,8 +22,8 @@ namespace Services
         public async Task<IList<Item>> GetOrder(OrderParams orderParams)
         {
             int nextOrderAfter = orderParams.NextOrderAfter;
-            string suplierCode = orderParams.SupplierCode;
-            int strnDateWindow = orderParams.DateWindow;
+            string suplierCode = orderParams.SupplierCode;            
+            var windowFirstDate = DateTime.Now.AddDays((-1)*orderParams.DateWindow);
 
             var allProducts = from b in _dbContext.Bmast1s
                               join s in _dbContext.Strns on b.PdFileId equals s.StBm1origin
@@ -39,32 +39,36 @@ namespace Services
                               };
             var salesTrans = from s in _dbContext.Strns
                              join sm in _dbContext.Smasts on s.SFileId equals sm.SFileId
-                             where s.StTransKind == 37 && s.StDate >= DateTime.Now.AddDays(-strnDateWindow)
+                             where s.StTransKind == 37 && s.StDate >= windowFirstDate
                              group new { s, sm } by sm.SName into g
                              select new
                              {
                                  sname = g.Key,
-                                 mesos_oros_ana_mera = g.Sum(x => x.s.StQuant) / strnDateWindow,
+                                 mesos_oros_ana_mera = g.Sum(x => x.s.StQuant) / orderParams.DateWindow,
                              };
 
-            var query = from supProd in await allProducts.ToListAsync()
-                        join sales in await salesTrans.ToListAsync() on supProd.SName equals sales.sname
+            var order = await
+                (
+                        from supProd in allProducts
+                        join sales in salesTrans on supProd.SName equals sales.sname
                         orderby supProd.SName descending
                         select new
                         {
                             Product = supProd.SName,
                             Stock = supProd.SstRemain1,
                             AvgSalesPerDay = sales.mesos_oros_ana_mera,
-                        };
+                        }
+                ).ToListAsync();
 
-            var results = query.ToList().Select(x => new Item()
-            {
-                AvgSalesPerDay = (double)Math.Round((decimal)(x.AvgSalesPerDay??0), 2),
-                Stock = (int)(x.Stock??0),
-                Product = x.Product,
-                SuggestedQuantity = (int)Math.Round((decimal)(x.AvgSalesPerDay??0) * nextOrderAfter)
-            }).ToList();
-            return results;
+            var finalOrder = order
+                .Select(x => new Item()
+                {
+                    AvgSalesPerDay = (double)Math.Round((decimal)(x.AvgSalesPerDay??0), 2),
+                    Stock = (int)(x.Stock??0),
+                    Product = x.Product,
+                    SuggestedQuantity = (int)Math.Round((decimal)(x.AvgSalesPerDay??0) * nextOrderAfter)
+                }).ToList();
+            return finalOrder;
         }
     }
 }
