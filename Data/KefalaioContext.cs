@@ -291,6 +291,10 @@ namespace Data
             _connectionString = configuration.Value.ConnectionString;
         }
 
+        
+        public KefalaioContext(DbContextOptions<KefalaioContext> options): base(options)
+        {}
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)

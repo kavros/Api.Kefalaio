@@ -29,6 +29,7 @@ namespace Api.Kefalaio
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "WebApplicationTest", Version = "v1" });
             });
+        
             services.AddDbContext<KefalaioContext>();
             services.AddScoped<IOrdersService, OrdersService>();
         }
