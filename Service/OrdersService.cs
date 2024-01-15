@@ -36,7 +36,6 @@ namespace Services
                 .GroupBy(x => x.SName)
                 .Select(x => new Product { SName = x.Key, SstRemain1 = GetSstRemain1(x.Key) ?? 0 });
 
-
             //concat sales lists and sum sales ammount
             var includePreviousYear = windowFirstDate.Year < DateTime.UtcNow.Year;
             var previousYearSales = includePreviousYear
@@ -48,16 +47,16 @@ namespace Services
                             .GroupBy(x => x.SName)
                             .Select(x => new Sale { SName = x.Key, SumSales = x.Sum(i => i.SumSales) });
 
-
             var order =
                     from supProd in allProducts
-                    join sales in salesTrans on supProd.SName equals sales.SName
+                    join sales in salesTrans on supProd.SName equals sales.SName into ps_jointable
+                    from p in ps_jointable.DefaultIfEmpty()
                     orderby supProd.SName descending
                     select new
                     {
                         Product = supProd.SName,
                         Stock = supProd.SstRemain1,
-                        AvgSalesPerDay = sales.SumSales / orderParams.DateWindow,
+                        AvgSalesPerDay =  p!=null ?p.SumSales / orderParams.DateWindow : 0,
                     };
 
 
