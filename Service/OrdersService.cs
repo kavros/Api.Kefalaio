@@ -28,13 +28,24 @@ namespace Services
             var windowFirstDate = DateTime.Now.AddDays((-1) * orderParams.DateWindow);
             using KefalaioContext oldContext = GetOldkefalaioContext();
 
-            //get all products bought during last and current year and keep last's years inventory
-            var productsBoughtThisYear = await GetAllProducts(_dbContext, suplierCode).ToListAsync();
-            var productsBoughtLastYear = await GetAllProducts(oldContext, suplierCode).ToListAsync();
+            //get all products bought last three months for given supplier code
+            var numberOfMonthsBack = 3;
+            var minDate = DateTime.UtcNow.AddMonths(-numberOfMonthsBack);
+            List<Product> productsBoughtThisYear = new();
+            List<Product> productsBoughtLastYear = new();
+            if (minDate.Year < DateTime.UtcNow.Year)
+            {
+                productsBoughtLastYear = await 
+                    GetAllProducts(oldContext, suplierCode, minDate)
+                    .ToListAsync();
+            }
+            productsBoughtThisYear = await
+                    GetAllProducts(_dbContext, suplierCode, minDate)
+                    .ToListAsync();
             var allProducts = productsBoughtThisYear
                 .Concat(productsBoughtLastYear)
                 .GroupBy(x => x.SName)
-                .Select(x => new Product { SName = x.Key, SstRemain1 = GetSstRemain1(x.Key) ?? 0 });
+                .Select(x => new Product { SName = x.Key, SstRemain1 = GetSstRemain1(x.Key) ?? 0 }).ToList();
 
             //concat sales lists and sum sales ammount
             var includePreviousYear = windowFirstDate.Year < DateTime.UtcNow.Year;
@@ -86,14 +97,14 @@ namespace Services
             var oldContext = new KefalaioContext(optionsBuilder.Options);
             return oldContext;
         }
-        private IQueryable<Product> GetAllProducts(KefalaioContext context, string suplierCode)
+        private IQueryable<Product> GetAllProducts(KefalaioContext context, string suplierCode, DateTime minDate)
         {
             return  from b in context.Bmast1s
                     join s in context.Strns on b.PdFileId equals s.StBm1origin
                     join sm in context.Smasts on s.SFileId equals sm.SFileId
                     join st in context.Sstores on s.SFileId equals st.SFileId
                     join p in context.Pmasts on b.PFileId equals p.PFileId
-                    where p.PCode == suplierCode && st.SpaFileIdNo == 1
+                    where p.PCode == suplierCode && st.SpaFileIdNo == 1 && s.StDate > minDate
                     group new { sm.SName, st.SstRemain1 } by new { sm.SName, st.SstRemain1 } into g
                     select new Product
                     {
