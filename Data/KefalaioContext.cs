@@ -6,10 +6,18 @@ using Microsoft.Extensions.Options;
 
 namespace Data
 {
+    public class MyDataFailedImports
+    {
+        public int Id { get; set; }
+        public string SName { get; set; }
+        public string SCode { get; set; }
+        public string Response { get; set; }
+    }
     public partial class KefalaioContext : DbContext
     {
 
         private readonly string _connectionString;
+        public virtual DbSet<MyDataFailedImports> FailedImports { get; set; }
         public virtual DbSet<ATestParastatika> ATestParastatikas { get; set; }
         public virtual DbSet<Abcanalysiscust> Abcanalysiscusts { get; set; }
         public virtual DbSet<Abcanalysisstock> Abcanalysisstocks { get; set; }
@@ -422,7 +430,15 @@ namespace Data
                     .IsUnicode(false)
                     .UseCollation("Greek_BIN");
             });
+            modelBuilder.Entity<MyDataFailedImports>(x =>
+            {
+                x.HasKey(x => x.Id);
+                x.ToTable("myDataFailedImports");
+                x.Property(e => e.SCode)
+                .IsUnicode(false)
+                .UseCollation("Greek_BIN");
 
+            });
             modelBuilder.Entity<Abcanalysiscust>(entity =>
             {
                 entity.HasKey(e => e.AbcFileId)

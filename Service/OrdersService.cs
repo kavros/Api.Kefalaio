@@ -1,6 +1,7 @@
 ﻿using Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using System.Xml.Linq;
 
 namespace Services
 {
@@ -12,7 +13,27 @@ namespace Services
             _dbContext = context;
             _connectionStringOld = configuration.Value.ConnectionStringOld;
         }
+        public async Task AddToFailures(List<MyDataFailedImports> rows)
+        {
+            await _dbContext.AddRangeAsync(rows);
+            await _dbContext.SaveChangesAsync();
+        }
+        public async Task<IList<Product>> GetAllProducts()
+        {
+            var f =  await _dbContext.FailedImports.Select(x=> x.SCode).ToListAsync();
 
+            return (from sm in _dbContext.Smasts
+                    join vat in _dbContext.Vats on sm.SVatcode equals vat.FpaCode
+                    join strn in _dbContext.Strns on sm.SFileId equals strn.SFileId
+                    where f.Contains(sm.SCode)
+                                    select new Product
+                                    {
+                                        SCode = sm.SCode,
+                                        SName = sm.SName,
+                                        Vat = vat.FpaData != null ? vat.FpaData.ToString() : string.Empty,
+                                        Unit = sm.SUnitOm 
+                                    }).Distinct().ToList();
+        }
         public async Task<IList<Supplier>> GetSuppliers()
         {
             return await _dbContext.Pmasts
