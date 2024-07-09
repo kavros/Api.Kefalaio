@@ -9,6 +9,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Services", "Service\Service
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Data", "Data\Data.csproj", "{6DEEB224-E24B-4E9B-9017-6F2E5CE15CDD}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MyData.ApiLib.1.0.8", "MyData.ApiLib.1.0.8\MyData.ApiLib.1.0.8.csproj", "{8BA3702A-C0E8-4393-B106-9C98994A369D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{6DEEB224-E24B-4E9B-9017-6F2E5CE15CDD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6DEEB224-E24B-4E9B-9017-6F2E5CE15CDD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6DEEB224-E24B-4E9B-9017-6F2E5CE15CDD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8BA3702A-C0E8-4393-B106-9C98994A369D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8BA3702A-C0E8-4393-B106-9C98994A369D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8BA3702A-C0E8-4393-B106-9C98994A369D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8BA3702A-C0E8-4393-B106-9C98994A369D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using Services;
+using Services.Models;
 using Configuration = Data.Configuration;
 
 namespace Api.Kefalaio
@@ -22,7 +23,9 @@ namespace Api.Kefalaio
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            
             services.Configure<Configuration>(Configuration.GetSection("Configuration"));
+            services.Configure<MyDataConnection>(Configuration.GetSection("MyDataCredentials"));
             services.AddControllers();
             services.AddOptions(); 
             services.AddSwaggerGen(c =>
@@ -32,6 +35,7 @@ namespace Api.Kefalaio
         
             services.AddDbContext<KefalaioContext>();
             services.AddScoped<IOrdersService, OrdersService>();
+            services.AddScoped<IMyDataService, MyDataService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
