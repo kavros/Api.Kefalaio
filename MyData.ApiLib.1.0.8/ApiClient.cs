@@ -32,9 +32,11 @@ namespace MyData.ApiLib
             {
                 Client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Xml));
             }
-
-            Client.DefaultRequestHeaders.Add("aade-user-id", UserName);
-            Client.DefaultRequestHeaders.Add("ocp-apim-subscription-key", UserKey);
+            if (!Client.DefaultRequestHeaders.Any(x => x.Key == "aade-user-id"))
+            {
+                Client.DefaultRequestHeaders.Add("aade-user-id", UserName);
+                Client.DefaultRequestHeaders.Add("ocp-apim-subscription-key", UserKey);
+            }
         }
 
         /* construction */
@@ -74,7 +76,7 @@ namespace MyData.ApiLib
                 {
                     await Info.LoadFromResponseAsync(Response).ConfigureAwait(false);
 
-                    Info.IsSuccess = true;
+                    Console.WriteLine(Info.Tag + ", " + Info.Response + ", " + Info.ReasonPhrase);
 
                     if (OnAfter != null)
                         OnAfter(this, Info);

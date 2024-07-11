@@ -60,7 +60,6 @@ namespace Api.Kefalaio.Controllers
         [Route("SendInvoice")]
         public async Task<IActionResult> SendInvoice()
         {
-            Console.WriteLine(_webHostEnvironment.EnvironmentName);
             await _myDataService.SendInvoice();
             return Ok();
         }
