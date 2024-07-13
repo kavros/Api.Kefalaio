@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Serilog;
 using Services;
+using Services.Models;
 
 namespace Api.Kefalaio.Controllers
 {
@@ -56,12 +57,20 @@ namespace Api.Kefalaio.Controllers
             }
         }
 
+        [HttpGet]
+        [Route("GetAllInvoices")]
+        public async Task<IActionResult> GetAllInvoices()
+        {
+            var res = await _myDataService.GetAllInvoices();
+            return Ok(res);
+        }
+
         [HttpPost]
         [Route("SendInvoice")]
-        public async Task<IActionResult> SendInvoice()
+        public async Task<IActionResult> SendInvoice(Invoice invoice)
         {
-            await _myDataService.SendInvoice();
-            return Ok();
+            var res = await _myDataService.SendInvoice(invoice);
+            return Ok(res);
         }
 
     }

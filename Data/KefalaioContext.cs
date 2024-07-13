@@ -1,4 +1,5 @@
 ﻿using Api.Kefalaio.Model;
+using Data.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 
@@ -10,6 +11,7 @@ namespace Data
     {
 
         private readonly string _connectionString;
+        public virtual DbSet<InvoiceMappings> InvoiceMappings { get; set; }
         public virtual DbSet<ATestParastatika> ATestParastatikas { get; set; }
         public virtual DbSet<Abcanalysiscust> Abcanalysiscusts { get; set; }
         public virtual DbSet<Abcanalysisstock> Abcanalysisstocks { get; set; }
@@ -17452,7 +17454,14 @@ namespace Data
                     .HasForeignKey(d => d.SoTrNumsId)
                     .HasConstraintName("sofxToNums");
             });
-
+            modelBuilder.Entity<InvoiceMappings>(x =>
+            {
+                x.ToTable("InvoiceMappings");
+                x.HasKey(x => x.Id);
+                x.Property(e => e.DocumentId)
+                    .IsUnicode(false)
+                    .UseCollation("Greek_BIN");
+            });
             modelBuilder.Entity<Vtodiscscenario>(entity =>
             {
                 entity.HasKey(e => e.VdsFileId)

@@ -1,5 +1,6 @@
 ﻿using Api.Kefalaio.Model;
 using Data;
+using Data.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using MyData.Xsd;
@@ -18,28 +19,47 @@ namespace Services
 
         }
 
-        public async Task SendInvoice()
+        public async Task<IList<Invoice>> GetAllInvoices()
         {
-            var customerCode = "22";//TODO: will be passed as a parameter
-            var invoiceId = "TΔA000005"; //TODO: will be passed as a parameter
-           
-            
+            var res = from cm in _dbContext.Cmasts
+                      join strn in _dbContext.Strns on cm.CCode equals strn.StCustSuppl
+                      where strn.StTransKind == 35
+                      select new Invoice()
+                      {
+                          DocumentId = strn.StDoc,
+                          CustomerId = cm.CCode
+                      };
+            return await res.OrderBy(x => x.DocumentId).ToListAsync();
+        }
 
+        public async Task<SendInvoiceResponse> SendInvoice(Invoice invoice)
+        {
             MyData.ApiLib.Api.Initialize(_credentials.Url, true);
-            Console.WriteLine(_credentials.Url);
-
+            var invoiceData = await GetInvoice(invoice.CustomerId, invoice.DocumentId);
             var invoices = new InvoicesDoc()
             {
-                invoice = [await GetInvoice(customerCode, invoiceId)]
+                invoice = [invoiceData]
             };
+            //send invoice to mydata
             var response = await MyData.ApiLib.Api.SendInvoiceList(_credentials.User, _credentials.Key, invoices);
+            
+            //save response
+            await _dbContext.InvoiceMappings.AddAsync(new InvoiceMappings()
+            {
+                DocumentId = invoice.DocumentId,
+                QRUrl = response.response[0].qrUrl,
+                InvoiceMark = response.response[0].invoiceMark
+            });
+            await _dbContext.SaveChangesAsync();
 
-            Console.WriteLine(response.response[0].qrUrl);
-            Console.WriteLine(response.response[0].invoiceUid);
-            //Console.WriteLine(response.response[0].invoiceMark);
-
-
-            //TODO: save response
+            //return UI data
+            return new SendInvoiceResponse()
+            {
+                InvoiceData = invoiceData,
+                InvoiceMark = response.response[0].invoiceMark,
+                InvoiceUID = response.response[0].invoiceUid,
+                QRUrl = response.response[0].qrUrl,
+            };
         }
 
         private async Task<AadeBookInvoiceType> GetInvoice(string customerCode, string invoiceId)

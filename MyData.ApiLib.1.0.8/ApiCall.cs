@@ -32,16 +32,12 @@ namespace MyData.ApiLib
         /// </summary>
         public virtual async Task LoadFromResponseAsync(HttpResponseMessage Response)
         {
-            this.ActionUrl = !string.IsNullOrWhiteSpace(ActionUrl) ? ActionUrl : Response.RequestMessage.RequestUri.ToString();
+            ActionUrl = !string.IsNullOrWhiteSpace(ActionUrl) ? ActionUrl : Response.RequestMessage.RequestUri.ToString();
             this.Response = Response;
-            this.StatusCode = Response.StatusCode;
-            this.ReasonPhrase = Response.ReasonPhrase;
-            this.IsSuccess = Response.IsSuccessStatusCode;
-
-            if (this.IsSuccess)
-            {
-                ResponseText = await Response.Content.ReadAsStringAsync();
-            }
+            StatusCode = Response.StatusCode;
+            ReasonPhrase = Response.ReasonPhrase;
+            IsSuccess = Response.IsSuccessStatusCode;
+            ResponseText = await Response.Content.ReadAsStringAsync();
         }
         /// <summary>
         /// Deserializes the response text into an object.
