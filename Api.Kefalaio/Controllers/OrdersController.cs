@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Serilog;
 using Services;
-using Services.Models;
 
 namespace Api.Kefalaio.Controllers
 {
@@ -12,15 +10,12 @@ namespace Api.Kefalaio.Controllers
     [Route("[controller]")]
     public class OrdersController : ControllerBase
     {
-
         private readonly IOrdersService _ordersService;
-        private readonly IMyDataService _myDataService;
-        private readonly IWebHostEnvironment _webHostEnvironment;
-        public OrdersController(IOrdersService ordersService, IMyDataService myDataService, IWebHostEnvironment webHostEnvironment)
+
+        public OrdersController(IOrdersService ordersService)
         {
             _ordersService = ordersService;
-            _myDataService = myDataService;
-            _webHostEnvironment = webHostEnvironment;
+
         }
        
         [HttpPost]
@@ -56,31 +51,12 @@ namespace Api.Kefalaio.Controllers
                 throw;
             }
         }
-
-        [HttpGet]
-        [Route("GetAllInvoices")]
-        public async Task<IActionResult> GetAllInvoices()
-        {
-            var res = await _myDataService.GetAllInvoices();
-            return Ok(res);
-        }
-
-        [HttpPost]
-        [Route("SendInvoice")]
-        public async Task<IActionResult> SendInvoice(Invoice invoice)
-        {
-            var res = await _myDataService.SendInvoice(invoice);
-            return Ok(res);
-        }
-
     }
 
 }
 
 /**
- * TODO:
- * ! use correct appSettings.json based on the environment
- * 
+ * TODO: 
  * hide perivalontiko telos
  * remove unused nuget packages like Serilog.Sinks.RollingFile
  */

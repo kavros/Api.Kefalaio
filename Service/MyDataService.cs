@@ -21,19 +21,34 @@ namespace Services
 
         public async Task<IList<Invoice>> GetAllInvoices()
         {
-            var res = from cm in _dbContext.Cmasts
+            var res = (from cm in _dbContext.Cmasts
                       join strn in _dbContext.Strns on cm.CCode equals strn.StCustSuppl
                       where strn.StTransKind == 35
+                      orderby strn.StDoc
                       select new Invoice()
                       {
                           DocumentId = strn.StDoc,
                           CustomerId = cm.CCode
-                      };
-            return await res.OrderBy(x => x.DocumentId).ToListAsync();
+                      }).AsEnumerable()
+                      .DistinctBy(x => x.DocumentId);
+            return res.ToList();
         }
 
         public async Task<SendInvoiceResponse> SendInvoice(Invoice invoice)
         {
+            var existing = await _dbContext.InvoiceMappings
+                .FirstOrDefaultAsync(x => invoice.DocumentId == x.DocumentId);
+            if (existing != null)
+            {
+                return new SendInvoiceResponse()
+                {
+                    CustomerDetails = await GetCustomerDetails(invoice.CustomerId),
+                    InvoiceRows = await GetInvoice(invoice.DocumentId),
+                    InvoiceMark = existing.InvoiceMark,
+                    QRUrl = existing.QRUrl
+                };
+            }
+
             MyData.ApiLib.Api.Initialize(_credentials.Url, true);
             var invoiceData = await GetInvoice(invoice.CustomerId, invoice.DocumentId);
             var invoices = new InvoicesDoc()
@@ -55,13 +70,47 @@ namespace Services
             //return UI data
             return new SendInvoiceResponse()
             {
-                InvoiceData = invoiceData,
+                CustomerDetails = await GetCustomerDetails(invoice.CustomerId),
+                InvoiceRows = await GetInvoice(invoice.DocumentId),
                 InvoiceMark = response.response[0].invoiceMark,
-                InvoiceUID = response.response[0].invoiceUid,
                 QRUrl = response.response[0].qrUrl,
             };
         }
+        private async Task<List<InvoiceRow>> GetInvoice(string invoiceId)
+        {
+            var data = from strn in _dbContext.Strns
+                       join sm in _dbContext.Smasts on strn.SFileId equals sm.SFileId
+                       join vat in _dbContext.Vats on strn.StVatid equals vat.FpaId
+                       where strn.StTransKind == 35 && strn.StDoc == invoiceId
+                       orderby strn.SFileId
+                       select new InvoiceRow()
+                       {
+                           Code = sm.SCode,
+                           Description = sm.SName,
+                           Quantity = strn.StQuant,
+                           MM = sm.SUnitOm,
+                           Price = strn.StPrice,
+                           Discount = strn.StDiscount,
+                           NetValue = strn.StValue,
+                           Vat = vat.FpaData,
+                           VatAmount = strn.StFpaVal,
+                           Amount = strn.StFpaVal + strn.StValue
+                       };
 
+            return await data.ToListAsync();
+        }
+        private async Task<CustomerDetails> GetCustomerDetails(string customerCode)
+        {
+            var res =  from cm in _dbContext.Cmasts
+                       where cm.CCode == customerCode
+                       select new CustomerDetails()
+                        {
+                            Address = cm.CAddress11,
+                            Name = cm.CName,
+                            VatNumber = cm.CVatno
+                        };
+            return await res.FirstAsync();
+        }
         private async Task<AadeBookInvoiceType> GetInvoice(string customerCode, string invoiceId)
         {
             var vatValueToCategory = new Dictionary<double, int>()
@@ -101,6 +150,7 @@ namespace Services
                            lineNumber = 1,
                            netValue = (decimal)strn.StValue,
                            vatAmount = (decimal)strn.StFpaVal,
+                           
                            vatCategory = vatValueToCategory[(double)vat.FpaData],
                            quantity = (decimal)strn.StQuant,
                            discountOption = true, //??
