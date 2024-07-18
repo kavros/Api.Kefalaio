@@ -22,11 +22,17 @@ namespace Services.Models
         public required string Name { get; set; }
         public required string Address { get; set; }
     }
+    public class MyDataDetails
+    {
+        public required string QRUrl { get; set; }
+        public long? InvoiceMark { get; set; }
+        public required string PaymentMethod { get; set; }
+        public required DateTime CreatedDate { get; set; }
+    }
     public class SendInvoiceResponse
     {
         public required CustomerDetails CustomerDetails { get; set; }
         public required List<InvoiceRow> InvoiceRows { get; set; }
-        public required string QRUrl { get; set; }
-        public long? InvoiceMark { get; set; }
+        public required MyDataDetails MyDataDetails { get; set; }
     }
 }
