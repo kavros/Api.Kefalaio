@@ -38,6 +38,4 @@ namespace Api.Kefalaio.Controllers
     //seira?
     //aa?
     //cancel invoice?
-    //! use correct appSettings.json based on the environment
-
 }

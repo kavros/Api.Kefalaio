@@ -12,6 +12,7 @@ namespace Data
 
         private readonly string _connectionString;
         public virtual DbSet<InvoiceMappings> InvoiceMappings { get; set; }
+        public virtual DbSet<MyDataCredentials> MyDataCredentials { get; set; }
         public virtual DbSet<ATestParastatika> ATestParastatikas { get; set; }
         public virtual DbSet<Abcanalysiscust> Abcanalysiscusts { get; set; }
         public virtual DbSet<Abcanalysisstock> Abcanalysisstocks { get; set; }
@@ -17461,6 +17462,12 @@ namespace Data
                 x.Property(e => e.DocumentId)
                     .IsUnicode(false)
                     .UseCollation("Greek_BIN");
+            });
+            modelBuilder.Entity<MyDataCredentials>(x =>
+            {
+                x.ToTable("MyDataCredentials");
+                x.HasKey(x => x.Key);
+
             });
             modelBuilder.Entity<Vtodiscscenario>(entity =>
             {

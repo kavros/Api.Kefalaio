@@ -1,21 +1,16 @@
-﻿using Api.Kefalaio.Model;
-using Data;
+﻿using Data;
 using Data.Models;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using MyData.Xsd;
 using Services.Models;
-using System;
 
 namespace Services
 {
     public class MyDataService : IMyDataService
     {
-        private readonly MyDataConnection _credentials;
         private readonly KefalaioContext _dbContext;
-        public MyDataService(IOptions<MyDataConnection> configuration, KefalaioContext kefalaioContext)
+        public MyDataService(KefalaioContext kefalaioContext)
         {
-            _credentials = configuration.Value;
             _dbContext = kefalaioContext;
 
         }
@@ -55,15 +50,15 @@ namespace Services
 
                 };
             }
-
-            MyData.ApiLib.Api.Initialize(_credentials.Url, true);
+            var credentials = await _dbContext.MyDataCredentials.FirstOrDefaultAsync();
+            MyData.ApiLib.Api.Initialize(credentials.Url, true);
             var invoiceData = await GetInvoice(invoice.CustomerId, invoice.DocumentId);
             var invoices = new InvoicesDoc()
             {
                 invoice = [invoiceData]
             };
             //send invoice to mydata
-            var response = await MyData.ApiLib.Api.SendInvoiceList(_credentials.User, _credentials.Key, invoices);
+            var response = await MyData.ApiLib.Api.SendInvoiceList(credentials.User, credentials.Key, invoices);
 
             //save response
             var currentDate = DateTime.Now;

@@ -1,3 +1,4 @@
+using Api.Kefalaio.Model;
 using Data;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -6,7 +7,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using Services;
-using Services.Models;
 using Configuration = Data.Configuration;
 
 namespace Api.Kefalaio
@@ -25,7 +25,6 @@ namespace Api.Kefalaio
         {
             
             services.Configure<Configuration>(Configuration.GetSection("Configuration"));
-            services.Configure<MyDataConnection>(Configuration.GetSection("MyDataCredentials"));
             services.AddControllers();
             services.AddOptions(); 
             services.AddSwaggerGen(c =>
