@@ -32,9 +32,28 @@ namespace Api.Kefalaio.Controllers
             var res = await _myDataService.SendInvoice(invoice);
             return Ok(res);
         }
+
+        [HttpGet]
+        [Route("GetMyDataInvoices")]
+        public async Task<IActionResult> GetMyDataInvoices()
+        {
+            return Ok(await _myDataService.GetMyDataInvoices());
+        }
+
+
+        public class CancelInvoiceDTO
+        {
+            public string DocumentId { get; set; }
+        }
+        [HttpPost]
+        [Route("CancelInvoice")]
+        public async Task<IActionResult> CancelInvoice(CancelInvoiceDTO data)
+        {
+            var res = await _myDataService.CancelInvoice(data.DocumentId);
+            return Ok(res);
+        }
     }
     //TODO:
-    //!!!handle product discount!
     //seira?
     //aa?
     //cancel invoice?

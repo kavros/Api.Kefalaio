@@ -3,6 +3,7 @@ using Data.Models;
 using Microsoft.EntityFrameworkCore;
 using MyData.Xsd;
 using Services.Models;
+using System.Reflection.Metadata;
 
 namespace Services
 {
@@ -85,6 +86,34 @@ namespace Services
                 }
 
             };
+        }
+        public async Task<IList<string>> GetMyDataInvoices()
+        {
+            return await _dbContext.InvoiceMappings.Select(x => x.DocumentId).ToListAsync();
+        }
+        public async Task<string?> CancelInvoice(string documentId)
+        {
+            var credentials = await _dbContext.MyDataCredentials.FirstOrDefaultAsync();
+            var mappings = await _dbContext.InvoiceMappings.FirstOrDefaultAsync(x => documentId == x.DocumentId);
+            if(mappings == null)
+            {
+                return "Document id cannot be found.";
+            }
+            MyData.ApiLib.Api.Initialize(credentials.Url, true);
+            
+            var response = await MyData.ApiLib.Api.CancelInvoice(credentials.User, credentials.Key, mappings.InvoiceMark.ToString());
+            if (response?.response.FirstOrDefault()?.cancellationMark != null)
+            {
+                _dbContext.Remove(mappings);
+                await _dbContext.SaveChangesAsync();
+                return null;
+            }
+
+            var errors = response?.response
+                                .FirstOrDefault()
+                                ?.errors?.error
+                                ?.FirstOrDefault()?.message;
+            return errors;
         }
         private async Task<List<InvoiceRow>> GetInvoice(string invoiceId)
         {
