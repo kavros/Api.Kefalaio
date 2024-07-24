@@ -46,7 +46,7 @@ namespace Services
                         InvoiceMark = existing.InvoiceMark,
                         QRUrl = existing.QRUrl,
                         PaymentMethod = "Μετρητά",
-                        CreatedDate = existing.SentDate,
+                        CreatedDate = existing.SentDate.ToString("dd/MM/yyyy"),
                     }
 
                 };
@@ -81,7 +81,7 @@ namespace Services
                 {
                     InvoiceMark = response.response[0].invoiceMark,
                     QRUrl = response.response[0].qrUrl,
-                    CreatedDate = currentDate,
+                    CreatedDate = currentDate.ToString("dd/MM/yyyy"),
                     PaymentMethod = "Μετρητά"
                 }
 
@@ -165,7 +165,7 @@ namespace Services
                 { 0, 7 },
                 { 3, 9 }
             };
-
+            
             var customerDetails = from cm in _dbContext.Cmasts
                                   where cm.CCode == customerCode
                                   select new PartyType()
@@ -221,8 +221,8 @@ namespace Services
                 counterpart = customer,
                 invoiceHeader = new()
                 {
-                    series = "A",
-                    aa = "101", //TODO: set the correct value
+                    series = "0",
+                    aa = invoiceId.Last().ToString(),
                     issueDate = DateTime.Now,
                     invoiceType = InvoiceType.Item1Period1,
                     currency = CurrencyType.EUR,
