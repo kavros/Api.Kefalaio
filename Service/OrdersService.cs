@@ -55,12 +55,12 @@ namespace Services
             var lastYearSales = await GetAllSales(_dbContext, windowFirstDate).ToListAsync();
             var salesTrans = lastYearSales
                             .Concat(previousYearSales)
-                            .GroupBy(x => x.SName)
-                            .Select(x => new Sale { SName = x.Key, SumSales = x.Sum(i => i.SumSales) });
+                            .GroupBy(x => x.SCode)
+                            .Select(x => new Sale { SCode = x.Key, SumSales = x.Sum(i => i.SumSales) });
 
             var order =
                     from supProd in allProducts
-                    join sales in salesTrans on supProd.SName equals sales.SName into ps_jointable
+                    join sales in salesTrans on supProd.SCode equals sales.SCode into ps_jointable
                     from p in ps_jointable.DefaultIfEmpty()
                     orderby supProd.SName descending
                     select new
@@ -105,11 +105,12 @@ namespace Services
                     join st in context.Sstores on s.SFileId equals st.SFileId
                     join p in context.Pmasts on b.PFileId equals p.PFileId
                     where p.PCode == suplierCode && st.SpaFileIdNo == 1 && s.StDate > minDate
-                    group new { sm.SName, st.SstRemain1 } by new { sm.SName, st.SstRemain1 } into g
+                    group new { sm.SName, st.SstRemain1, sm.SCode } by new { sm.SName, st.SstRemain1, sm.SCode } into g
                     select new Product
                     {
                         SName = g.Key.SName,
-                        SstRemain1 = g.Key.SstRemain1
+                        SstRemain1 = g.Key.SstRemain1,
+                        SCode = g.Key.SCode
                     };
         }
 
@@ -119,10 +120,10 @@ namespace Services
             return  from s in context.Strns
                     join sm in context.Smasts on s.SFileId equals sm.SFileId
                     where s.StTransKind == 37 && s.StDate >= windowFirstDate
-                    group new { s, sm } by sm.SName into g
+                    group new { s, sm } by sm.SCode into g
                     select new Sale
                     {
-                        SName = g.Key,
+                        SCode = g.Key,
                         SumSales = g.Sum(x => x.s.StQuant)
                     };
         }

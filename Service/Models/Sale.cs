@@ -4,8 +4,8 @@
     {
         class Sale
         {
-            public string SName { get; set; }
             public double? SumSales { get; set; }
+            public string SCode { get; set; }
         }
         
     }
