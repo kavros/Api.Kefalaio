@@ -6,6 +6,7 @@
         {
             public string SName { get; set; }
             public double? SstRemain1 { get; set; }
+            public string SCode { get; set; }
         }
         
     }
