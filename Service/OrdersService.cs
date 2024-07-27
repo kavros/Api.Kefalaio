@@ -44,15 +44,15 @@ namespace Services
                     .ToListAsync();
             var allProducts = productsBoughtThisYear
                 .Concat(productsBoughtLastYear)
-                .GroupBy(x => x.SName)
-                .Select(x => new Product { SName = x.Key, SstRemain1 = GetSstRemain1(x.Key) ?? 0 }).ToList();
+                .GroupBy(x =>  new { x.SCode, x.SName })
+                .Select(x => new Product { SCode = x.Key.SCode, SstRemain1 = GetSstRemain1(x.Key.SCode) ?? 0, SName = x.Key.SName }).ToList();
 
             //concat sales lists and sum sales ammount
             var includePreviousYear = windowFirstDate.Year < DateTime.UtcNow.Year;
             var previousYearSales = includePreviousYear
                 ? await GetAllSales(oldContext, windowFirstDate).ToListAsync()
                 : new List<Sale>();
-            var lastYearSales = await GetAllSales(_dbContext, windowFirstDate).ToListAsync();
+            var lastYearSales = await GetAllSales(_dbContext, windowFirstDate).ToListAsync();            
             var salesTrans = lastYearSales
                             .Concat(previousYearSales)
                             .GroupBy(x => x.SCode)
@@ -70,7 +70,6 @@ namespace Services
                         AvgSalesPerDay =  p!=null ?p.SumSales / orderParams.DateWindow : 0,
                     };
 
-
             var finalOrder = order
                 .Select(x => new Item()
                 {
@@ -82,11 +81,11 @@ namespace Services
             return finalOrder;
         }
 
-        private double? GetSstRemain1(string sname)
+        private double? GetSstRemain1(string sCode)
         {
             return (from sm in _dbContext.Smasts 
                     join st in _dbContext.Sstores on sm.SFileId equals st.SFileId
-                    where st.SpaFileIdNo == 1 && sm.SName == sname
+                    where st.SpaFileIdNo == 1 && sm.SCode == sCode
                     select st.SstRemain1).FirstOrDefault();
         }
 
